@@ -1,1 +1,9 @@
-[]
+[
+  {
+    "id": "d926060b-a934-4772-bacc-84a647cf41da",
+    "title": "My GCSE Engineering NEA",
+    "date": "2026-08-30T19:24:26.856Z",
+    "content": "<p><strong>GCSE Engineering NEA: Interactive Toy Till</strong> </p><p><em>Published on August 30, 2026</em></p><p><br></p><p><strong>Project Overview</strong> This GCSE Engineering Non-Exam Assessment (NEA) project features a fully working interactive Toy Till. It combines precision 2D laser-cut mechanical enclosure components with custom Arduino code and embedded electronics.</p><p><br></p><p><strong>Main Documentation</strong> Complete Project Documentation: <code style=\"background-color: rgb(0, 0, 0);\">GCSE Engineering NEA 2025-26 - Albin Prince Ashok Arockia Doss.pdf</code> Contains the full design folder, initial research, manufacturing logs, CAD renders, testing, and final evaluation.</p><p><br></p><p><strong>Quick Links &amp; Resources</strong></p><ul><li>Project Brief: Primary design requirements and problem statement</li><li>Bill of Materials: <code style=\"background-color: rgb(0, 0, 0);\">Bill of Materials.xlsx</code> – Itemized component list, pricing, and specs</li><li>System Diagrams: <code style=\"background-color: rgb(0, 0, 0);\">GCSE Engineering NEA - The Toy Till - (v1).vsdx</code> – System flowcharts and electronic block diagrams</li></ul><p><strong>Repository Structure</strong></p><ul><li><code style=\"background-color: rgb(0, 0, 0);\">2D Lasercut Files/Design/</code> – CAD vector files prepared for laser cutting</li><li><code style=\"background-color: rgb(0, 0, 0);\">Final_Working_Code/</code> – Source code powering the interactive electronics</li></ul><p><br></p><p><br></p><p>You can find all the repository at : https://github.com/ThatAerospaceandTechGuy/GCSE-Engineering-NEA</p>",
+    "image": null
+  }
+]
