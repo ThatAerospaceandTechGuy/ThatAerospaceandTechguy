@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Admin Dashboard - MyPortfolio">
+    <title>MyPortfolio | Admin</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+    <script src="https://cdn.tiny.cloud/1/xp0vhhbgic71pfvw5yon53f5n281ax78n07cqorivadlmdgx/tinymce/7/tinymce.min.js" referrerpolicy="origin"></script>
+</head>
+<body class="admin-body">
+    <header class="admin-header">
+        <nav class="nav-container">
+            <a href="index.html" class="logo">My<span>Portfolio</span></a>
+            <ul class="nav-links" style="gap: 1.5rem;">
+                <li><a href="index.html">Home</a></li>
+                <li><a href="projects.html">Projects</a></li>
+                <li><a href="admin.html" class="active">Admin</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <main class="admin-main">
+        <section class="admin-section" id="loginSection">
+            <h2>Admin Login</h2>
+            <div class="status-message" id="loginStatus"></div>
+            <form class="login-form" id="loginForm">
+                <div class="form-group">
+                    <label for="username">Username</label>
+                    <input type="text" id="username" name="username" placeholder="Enter username" autocomplete="username" required>
+                </div>
+                <div class="form-group">
+                    <label for="password">Password</label>
+                    <input type="password" id="password" name="password" placeholder="Enter password" autocomplete="current-password" required>
+                </div>
+                <button type="submit" class="btn btn-primary" id="loginBtn">Login</button>
+            </form>
+        </section>
+
+        <section class="admin-section" id="configSection" style="display: none;">
+            <h2>GitHub Configuration</h2>
+            <div class="status-message" id="configStatus"></div>
+            <form class="login-form" id="configForm">
+                <div class="form-group">
+                    <label for="patToken">GitHub Personal Access Token (PAT)</label>
+                    <input type="password" id="patToken" name="patToken" placeholder="ghp_xxxxxxxxxxxx" autocomplete="off" required>
+                </div>
+                <div class="form-group">
+                    <label for="repoName">Repository Name (owner/repo)</label>
+                    <input type="text" id="repoName" name="repoName" placeholder="username/repository" required>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="branchName">Branch</label>
+                        <input type="text" id="branchName" name="branchName" value="main" required>
+                    </div>
+                </div>
+                <button type="submit" class="btn btn-primary" id="saveConfigBtn">Save Configuration</button>
+                <button type="button" class="btn btn-secondary" id="logoutBtn" style="margin-top: 0.5rem; width: 100%;">Logout</button>
+            </form>
+        </section>
+
+        <section class="admin-section" id="editorSection" style="display: none;">
+            <h2>Create New Project</h2>
+            <div class="status-message" id="editorStatus"></div>
+            <form id="projectForm">
+                <div class="form-group">
+                    <label for="projectTitle">Project Title</label>
+                    <input type="text" id="projectTitle" name="projectTitle" placeholder="Enter project title" required>
+                </div>
+                <div class="form-group">
+                    <label for="projectContent">Content</label>
+                    <textarea id="projectContent" name="projectContent" rows="20" required></textarea>
+                </div>
+                <div class="form-group">
+                    <label for="projectImage">Cover Image URL (optional)</label>
+                    <input type="text" id="projectImage" name="projectImage" placeholder="https://example.com/image.jpg">
+                </div>
+                <button type="submit" class="btn btn-primary" id="publishBtn">
+                    <span class="btn-text">Publish Project</span>
+                    <span class="spinner" style="display: none;"></span>
+                </button>
+            </form>
+        </section>
+
+        <section class="admin-section" id="projectsSection" style="display: none;">
+            <h2>Published Projects</h2>
+            <div class="status-message" id="projectsStatus"></div>
+            <div class="project-list" id="projectList"></div>
+        </section>
+    </main>
+
+    <script src="admin.js"></script>
+</body>
+</html>
