@@ -1,4 +1,4 @@
-// GitHub API Sync Engine & TinyMCE Configuration
+// GitHub API Sync Engine & QuillJS Configuration
 class GitHubSync {
     constructor() {
         this.pat = localStorage.getItem('github_pat') || '';
@@ -6,6 +6,7 @@ class GitHubSync {
         this.branch = localStorage.getItem('github_branch') || 'main';
         this.apiBase = 'https://api.github.com/repos';
         this.isLoggedIn = false;
+        this.quill = null;
         this.init();
     }
 
@@ -14,7 +15,7 @@ class GitHubSync {
         this.bindConfigForm();
         this.bindLogout();
         this.checkLogin();
-        this.initTinyMCE();
+        this.initQuill();
     }
 
     bindLoginForm() {
@@ -167,60 +168,40 @@ class GitHubSync {
         status.className = `status-message show status-${type}`;
     }
 
-    initTinyMCE() {
-        tinymce.init({
-            selector: '#projectContent',
-            height: 400,
-            menubar: false,
-            plugins: [
-                'advlist', 'autolink', 'lists', 'link', 'image', 'charmap', 'preview',
-                'anchor', 'searchreplace', 'visualblocks', 'code', 'fullscreen',
-                'insertdatetime', 'media', 'table', 'help', 'wordcount'
-            ],
-            toolbar: 'undo redo | blocks fontfamily fontsize | bold italic underline strikethrough | forecolor backcolor | alignleft aligncenter alignright alignjustify | outdent indent | numlist bullist | link image media | code fullscreen preview | help',
-            font_formats: 'Inter=Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;Arial=arial,helvetica,sans-serif;Courier New=courier new,courier,monospace;Georgia=georgia,times new roman,times,serif;Times New Roman=times new roman,times,serif',
-            fontsize_formats: '8pt 10pt 12pt 14pt 18pt 24pt 36pt 48pt 60pt 72pt',
-            content_style: `
-                body {
-                    font-family: Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-                    font-size: 14px;
-                    line-height: 1.6;
-                    color: #e6edf3;
-                    background: #0d1117;
-                }
-                img { max-width: 100%; height: auto; border-radius: 8px; }
-                video { max-width: 100%; border-radius: 8px; }
-                iframe { border-radius: 8px; }
-                pre { background: #161b22; border: 1px solid #30363d; border-radius: 8px; padding: 1rem; overflow-x: auto; }
-                code { background: #161b22; padding: 0.2rem 0.4rem; border-radius: 4px; }
-                blockquote { border-left: 3px solid #38bdf8; padding-left: 1rem; margin: 1rem 0; color: #8b949e; font-style: italic; }
-            `,
-            images_upload_handler: (blobInfo, success, failure) => {
-                const reader = new FileReader();
-                reader.onload = () => success(reader.result);
-                reader.onerror = () => failure('Failed to read file');
-                reader.readAsDataURL(blobInfo.blob());
+    initQuill() {
+        const toolbarOptions = [
+            [{ 'header': [1, 2, 3, 4, 5, 6, false] }],
+            [{ 'font': ['Inter', 'Arial', 'Courier New', 'Georgia', 'Times New Roman'] }],
+            [{ 'size': ['small', false, 'large', 'huge'] }],
+            ['bold', 'italic', 'underline', 'strike'],
+            [{ 'color': [] }, { 'background': [] }],
+            [{ 'align': [] }],
+            [{ 'list': 'ordered'}, { 'list': 'bullet' }],
+            [{ 'indent': '-1'}, { 'indent': '+1' }],
+            ['link', 'image', 'video', 'code-block', 'blockquote'],
+            ['clean']
+        ];
+
+        this.quill = new Quill('#editor', {
+            modules: {
+                toolbar: toolbarOptions,
             },
-            media_live_embeds: true,
-            media_dimensions: false,
-            promotion: false,
-            license_key: 'gpl',
-            setup: (editor) => {
-                editor.on('init', () => {
-                    document.getElementById('projectForm').addEventListener('submit', (e) => this.handlePublish(e));
-                });
-            }
+            placeholder: 'Write your project content...',
+            theme: 'snow'
         });
+
+        // Sync Quill content to hidden textarea on form submit
+        document.getElementById('projectForm').addEventListener('submit', (e) => this.handlePublish(e));
     }
 
     async handlePublish(e) {
         e.preventDefault();
         
         const title = document.getElementById('projectTitle').value.trim();
-        const content = tinymce.get('projectContent').getContent();
+        const content = this.quill.root.innerHTML;
         const image = document.getElementById('projectImage').value.trim();
 
-        if (!title || !content) {
+        if (!title || !content.trim() || content === '<p><br></p>') {
             this.showEditorStatus('Please fill in title and content', 'error');
             return;
         }
@@ -238,7 +219,7 @@ class GitHubSync {
             await this.publishProject({ title, content, image });
             this.showEditorStatus('Project published successfully! GitHub is rebuilding your site on Cloudflare Pages.', 'success');
             document.getElementById('projectForm').reset();
-            tinymce.get('projectContent').setContent('');
+            this.quill.setContents([]);
             this.loadProjectsList();
         } catch (error) {
             this.showEditorStatus(`Publish failed: ${error.message}`, 'error');
