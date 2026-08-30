@@ -133,9 +133,10 @@
         </section>
 
         <section class="admin-section" id="editorSection" style="display: none;">
-            <h2>Create New Project</h2>
+            <h2 id="editorSectionTitle">Create New Project</h2>
             <div class="status-message" id="editorStatus"></div>
             <form id="projectForm">
+                <input type="hidden" id="editingProjectId" name="editingProjectId">
                 <div class="form-group">
                     <label for="projectTitle">Project Title</label>
                     <input type="text" id="projectTitle" name="projectTitle" placeholder="Enter project title" required>
@@ -149,10 +150,13 @@
                     <label for="projectImage">Cover Image URL (optional)</label>
                     <input type="text" id="projectImage" name="projectImage" placeholder="https://example.com/image.jpg">
                 </div>
-                <button type="submit" class="btn btn-primary" id="publishBtn">
-                    <span class="btn-text">Publish Project</span>
-                    <span class="spinner" style="display: none;"></span>
-                </button>
+                <div style="display: flex; gap: 0.5rem; flex-wrap: wrap;">
+                    <button type="submit" class="btn btn-primary" id="publishBtn">
+                        <span class="btn-text">Publish Project</span>
+                        <span class="spinner" style="display: none;"></span>
+                    </button>
+                    <button type="button" class="btn btn-secondary" id="cancelEditBtn" style="display: none;">Cancel Edit</button>
+                </div>
             </form>
         </section>
 

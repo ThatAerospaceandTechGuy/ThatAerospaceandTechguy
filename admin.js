@@ -7,6 +7,7 @@ class GitHubSync {
         this.apiBase = 'https://api.github.com/repos';
         this.isLoggedIn = false;
         this.quill = null;
+        this.editingProjectId = null;
         this.init();
     }
 
@@ -14,6 +15,7 @@ class GitHubSync {
         this.bindLoginForm();
         this.bindConfigForm();
         this.bindLogout();
+        this.bindCancelEdit();
         this.checkLogin();
         this.initQuill();
     }
@@ -31,6 +33,11 @@ class GitHubSync {
     bindLogout() {
         const logoutBtn = document.getElementById('logoutBtn');
         logoutBtn.addEventListener('click', () => this.handleLogout());
+    }
+
+    bindCancelEdit() {
+        const cancelBtn = document.getElementById('cancelEditBtn');
+        cancelBtn.addEventListener('click', () => this.cancelEdit());
     }
 
     checkLogin() {
@@ -190,8 +197,18 @@ class GitHubSync {
             theme: 'snow'
         });
 
-        // Sync Quill content to hidden textarea on form submit
         document.getElementById('projectForm').addEventListener('submit', (e) => this.handlePublish(e));
+    }
+
+    cancelEdit() {
+        this.editingProjectId = null;
+        document.getElementById('editingProjectId').value = '';
+        document.getElementById('editorSectionTitle').textContent = 'Create New Project';
+        document.getElementById('publishBtn').querySelector('.btn-text').textContent = 'Publish Project';
+        document.getElementById('cancelEditBtn').style.display = 'none';
+        document.getElementById('projectForm').reset();
+        this.quill.setContents([]);
+        this.showEditorStatus('', 'info');
     }
 
     async handlePublish(e) {
@@ -200,6 +217,7 @@ class GitHubSync {
         const title = document.getElementById('projectTitle').value.trim();
         const content = this.quill.root.innerHTML;
         const image = document.getElementById('projectImage').value.trim();
+        const editingId = document.getElementById('editingProjectId').value;
 
         if (!title || !content.trim() || content === '<p><br></p>') {
             this.showEditorStatus('Please fill in title and content', 'error');
@@ -211,18 +229,22 @@ class GitHubSync {
         const spinner = publishBtn.querySelector('.spinner');
         
         publishBtn.disabled = true;
-        btnText.textContent = 'Publishing...';
+        btnText.textContent = editingId ? 'Updating...' : 'Publishing...';
         spinner.style.display = 'block';
-        this.showEditorStatus('Publishing to GitHub...', 'info');
+        this.showEditorStatus(editingId ? 'Updating project...' : 'Publishing to GitHub...', 'info');
 
         try {
-            await this.publishProject({ title, content, image });
-            this.showEditorStatus('Project published successfully! GitHub is rebuilding your site on Cloudflare Pages.', 'success');
-            document.getElementById('projectForm').reset();
-            this.quill.setContents([]);
+            if (editingId) {
+                await this.updateProject(editingId, { title, content, image });
+                this.showEditorStatus('Project updated successfully! GitHub is rebuilding your site on Cloudflare Pages.', 'success');
+            } else {
+                await this.publishProject({ title, content, image });
+                this.showEditorStatus('Project published successfully! GitHub is rebuilding your site on Cloudflare Pages.', 'success');
+            }
+            this.cancelEdit();
             this.loadProjectsList();
         } catch (error) {
-            this.showEditorStatus(`Publish failed: ${error.message}`, 'error');
+            this.showEditorStatus(`${editingId ? 'Update' : 'Publish'} failed: ${error.message}`, 'error');
         } finally {
             publishBtn.disabled = false;
             btnText.textContent = 'Publish Project';
@@ -274,6 +296,52 @@ class GitHubSync {
         return commitResponse.json();
     }
 
+    async updateProject(projectId, project) {
+        let projects = [];
+        let sha = null;
+
+        try {
+            const response = await this.githubRequest('GET', `contents/projects.json?ref=${this.branch}`);
+            if (!response.ok) throw new Error(`HTTP ${response.status}`);
+            const data = await response.json();
+            sha = data.sha;
+            const content = this.base64Decode(data.content);
+            projects = JSON.parse(content);
+        } catch (error) {
+            throw new Error('Failed to fetch existing projects');
+        }
+
+        const index = projects.findIndex(p => p.id === projectId);
+        if (index === -1) {
+            throw new Error('Project not found');
+        }
+
+        // Preserve original date, update other fields
+        projects[index] = {
+            ...projects[index],
+            title: project.title,
+            content: project.content,
+            image: project.image || null
+        };
+
+        const jsonContent = JSON.stringify(projects, null, 2);
+        const encodedContent = this.base64Encode(jsonContent);
+
+        const commitResponse = await this.githubRequest('PUT', 'contents/projects.json', {
+            message: `Update project: ${project.title}`,
+            content: encodedContent,
+            branch: this.branch,
+            sha: sha
+        });
+
+        if (!commitResponse.ok) {
+            const error = await commitResponse.json().catch(() => ({}));
+            throw new Error(error.message || 'Failed to commit to GitHub');
+        }
+
+        return commitResponse.json();
+    }
+
     async loadProjectsList() {
         const listContainer = document.getElementById('projectList');
         const status = document.getElementById('projectsStatus');
@@ -304,6 +372,7 @@ class GitHubSync {
                         <span class="project-date">Published on ${this.formatDate(project.date)}</span>
                     </div>
                     <div class="project-list-actions">
+                        <button class="btn btn-primary btn-sm" onclick="githubSync.editProject('${project.id}')">Edit</button>
                         <button class="btn btn-secondary btn-sm" onclick="githubSync.deleteProject('${project.id}')">Delete</button>
                     </div>
                 </div>
@@ -311,6 +380,42 @@ class GitHubSync {
         } catch (error) {
             console.error('Error loading projects list:', error);
             status.textContent = `Failed to load projects: ${error.message}`;
+            status.className = 'status-message show status-error';
+        }
+    }
+
+    async editProject(id) {
+        const status = document.getElementById('projectsStatus');
+        status.textContent = 'Loading project...';
+        status.className = 'status-message show status-info';
+
+        try {
+            const response = await this.githubRequest('GET', `contents/projects.json?ref=${this.branch}`);
+            if (!response.ok) throw new Error(`HTTP ${response.status}`);
+
+            const data = await response.json();
+            const content = this.base64Decode(data.content);
+            const projects = JSON.parse(content);
+
+            const project = projects.find(p => p.id === id);
+            if (!project) {
+                throw new Error('Project not found');
+            }
+
+            this.editingProjectId = id;
+            document.getElementById('editingProjectId').value = id;
+            document.getElementById('projectTitle').value = project.title;
+            document.getElementById('projectImage').value = project.image || '';
+            this.quill.root.innerHTML = project.content;
+            document.getElementById('editorSectionTitle').textContent = 'Edit Project';
+            document.getElementById('publishBtn').querySelector('.btn-text').textContent = 'Update Project';
+            document.getElementById('cancelEditBtn').style.display = 'inline-flex';
+            this.showEditorStatus('', 'info');
+            
+            // Scroll to editor
+            document.getElementById('editorSection').scrollIntoView({ behavior: 'smooth' });
+        } catch (error) {
+            status.textContent = `Failed to load project: ${error.message}`;
             status.className = 'status-message show status-error';
         }
     }
@@ -351,6 +456,11 @@ class GitHubSync {
             status.textContent = 'Project deleted successfully!';
             status.className = 'status-message show status-success';
             this.loadProjectsList();
+            
+            // If we were editing this project, cancel edit
+            if (this.editingProjectId === id) {
+                this.cancelEdit();
+            }
         } catch (error) {
             status.textContent = `Delete failed: ${error.message}`;
             status.className = 'status-message show status-error';
