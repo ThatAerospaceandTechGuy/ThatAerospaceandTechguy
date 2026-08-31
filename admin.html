@@ -33,153 +33,18 @@
             border-radius: 8px 8px 0 0 !important;
             border-bottom: none !important;
         }
-        .ql-stroke {
-            stroke: var(--text-primary) !important;
-        }
-        .ql-fill {
-            fill: var(--text-primary) !important;
-        }
-        .ql-picker {
-            color: var(--text-primary) !important;
-        }
-        .ql-picker-label {
-            border-color: var(--border) !important;
-            color: var(--text-primary) !important;
-        }
-        .ql-picker-options {
-            background: var(--bg-card) !important;
-            border-color: var(--border) !important;
-        }
-        .ql-picker-item {
-            color: var(--text-primary) !important;
-        }
-        .ql-picker-item:hover {
-            background: var(--border) !important;
-        }
-        .ql-tooltip {
-            background: var(--bg-card) !important;
-            border-color: var(--border) !important;
-            color: var(--text-primary) !important;
-        }
-        .ql-tooltip input {
-            background: var(--bg-main) !important;
-            border-color: var(--border) !important;
-            color: var(--text-primary) !important;
-        }
-        .ql-tooltip .ql-preview {
-            background: var(--bg-main) !important;
-        }
-        .ql-color-picker .ql-picker-label {
-            border-color: var(--border) !important;
-        }
-        .ql-video {
-            max-width: 100%;
-            border-radius: 8px;
-            margin: 1rem 0;
-        }
-        
-        /* File upload styles */
-        .file-upload-area {
-            border: 2px dashed var(--border);
-            border-radius: 8px;
-            padding: 2rem;
-            text-align: center;
-            transition: border-color 0.2s ease, background 0.2s ease;
-            background: var(--bg-main);
-        }
-        .file-upload-area:hover, .file-upload-area.drag-over {
-            border-color: var(--accent);
-            background: rgba(56, 189, 248, 0.05);
-        }
-        .file-upload-area input[type="file"] {
-            display: none;
-        }
-        .file-upload-label {
-            cursor: pointer;
-            color: var(--accent);
-            font-weight: 500;
-        }
-        .file-upload-label:hover {
-            text-decoration: underline;
-        }
-        .file-list {
-            margin-top: 1rem;
-            display: flex;
-            flex-direction: column;
-            gap: 0.5rem;
-        }
-        .file-item {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            padding: 0.75rem 1rem;
-            background: var(--bg-main);
-            border: 1px solid var(--border);
-            border-radius: 8px;
-            gap: 1rem;
-        }
-        .file-info {
-            display: flex;
-            align-items: center;
-            gap: 0.75rem;
-            flex: 1;
-            min-width: 0;
-        }
-        .file-icon {
-            width: 36px;
-            height: 36px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            background: var(--bg-card);
-            border-radius: 6px;
-            color: var(--accent);
-            flex-shrink: 0;
-        }
-        .file-details {
-            min-width: 0;
-        }
-        .file-name {
-            font-weight: 500;
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
-        }
-        .file-size {
-            font-size: 0.8rem;
-            color: var(--text-muted);
-        }
-        .file-remove {
-            background: none;
-            border: none;
-            color: var(--error);
-            cursor: pointer;
-            padding: 0.25rem;
-            border-radius: 4px;
-            transition: background 0.2s ease;
-        }
-        .file-remove:hover {
-            background: rgba(248, 81, 73, 0.15);
-        }
-        .file-progress {
-            height: 4px;
-            background: var(--border);
-            border-radius: 2px;
-            overflow: hidden;
-            margin-top: 0.5rem;
-        }
-        .file-progress-bar {
-            height: 100%;
-            background: var(--accent);
-            width: 0%;
-            transition: width 0.3s ease;
-        }
-        .form-actions {
-            display: flex;
-            gap: 0.5rem;
-            flex-wrap: wrap;
-            margin-top: 1rem;
-        }
+        .ql-stroke { stroke: var(--text-primary) !important; }
+        .ql-fill { fill: var(--text-primary) !important; }
+        .ql-picker { color: var(--text-primary) !important; }
+        .ql-picker-label { border-color: var(--border) !important; color: var(--text-primary) !important; }
+        .ql-picker-options { background: var(--bg-card) !important; border-color: var(--border) !important; }
+        .ql-picker-item { color: var(--text-primary) !important; }
+        .ql-picker-item:hover { background: var(--border) !important; }
+        .ql-tooltip { background: var(--bg-card) !important; border-color: var(--border) !important; color: var(--text-primary) !important; }
+        .ql-tooltip input { background: var(--bg-main) !important; border-color: var(--border) !important; color: var(--text-primary) !important; }
+        .ql-tooltip .ql-preview { background: var(--bg-main) !important; }
+        .ql-color-picker .ql-picker-label { border-color: var(--border) !important; }
+        .ql-video { max-width: 100%; border-radius: 8px; margin: 1rem 0; }
     </style>
 </head>
 <body class="admin-body">
@@ -211,29 +76,6 @@
             </form>
         </section>
 
-        <section class="admin-section" id="configSection" style="display: none;">
-            <h2>GitHub Configuration</h2>
-            <div class="status-message" id="configStatus"></div>
-            <form class="login-form" id="configForm">
-                <div class="form-group">
-                    <label for="patToken">GitHub Personal Access Token (PAT)</label>
-                    <input type="password" id="patToken" name="patToken" placeholder="ghp_xxxxxxxxxxxx" autocomplete="off" required>
-                </div>
-                <div class="form-group">
-                    <label for="repoName">Repository Name (owner/repo)</label>
-                    <input type="text" id="repoName" name="repoName" placeholder="username/repository" required>
-                </div>
-                <div class="form-row">
-                    <div class="form-group">
-                        <label for="branchName">Branch</label>
-                        <input type="text" id="branchName" name="branchName" value="main" required>
-                    </div>
-                </div>
-                <button type="submit" class="btn btn-primary" id="saveConfigBtn">Save Configuration</button>
-                <button type="button" class="btn btn-secondary" id="logoutBtn" style="margin-top: 0.5rem; width: 100%;">Logout</button>
-            </form>
-        </section>
-
         <section class="admin-section" id="editorSection" style="display: none;">
             <h2 id="editorSectionTitle">Create New Project</h2>
             <div class="status-message" id="editorStatus"></div>
@@ -253,25 +95,14 @@
                 </div>
                 
                 <div class="form-group">
-                    <label for="projectImage">Cover Image URL (optional)</label>
-                    <input type="text" id="projectImage" name="projectImage" placeholder="https://example.com/image.jpg">
+                    <label for="projectImage">Cover Image URL (relative to /assets/)</label>
+                    <input type="text" id="projectImage" name="projectImage" placeholder="projects/my-project/cover.jpg">
                 </div>
                 
                 <div class="form-group">
-                    <label>Project Files (any type)</label>
-                    <div class="file-upload-area" id="fileUploadArea">
-                        <input type="file" id="projectFiles" name="projectFiles" multiple>
-                        <label for="projectFiles" class="file-upload-label">
-                            <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" style="margin-bottom: 0.5rem; display: block; margin-left: auto; margin-right: auto;">
-                                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
-                                <polyline points="17 8 12 3 7 8"/>
-                                <line x1="12" y1="3" x2="12" y2="15"/>
-                            </svg>
-                            Click to select files or drag and drop
-                        </label>
-                        <p style="color: var(--text-muted); font-size: 0.85rem; margin-top: 0.5rem;">Supports all file types: images, PDFs, code, videos, archives, etc.</p>
-                    </div>
-                    <div class="file-list" id="fileList"></div>
+                    <label>Project Folder Name (for assets)</label>
+                    <input type="text" id="projectFolder" name="projectFolder" placeholder="my-project-name">
+                    <small style="color: var(--text-muted);">Files go in public/assets/projects/{folder}/</small>
                 </div>
                 
                 <div class="form-actions">
@@ -285,9 +116,19 @@
         </section>
 
         <section class="admin-section" id="projectsSection" style="display: none;">
-            <h2>Published Projects</h2>
+            <h2>Projects</h2>
             <div class="status-message" id="projectsStatus"></div>
             <div class="project-list" id="projectList"></div>
+            
+            <div style="margin-top: 2rem; padding: 1rem; background: var(--bg-main); border: 1px solid var(--border); border-radius: 8px;">
+                <h4 style="margin-bottom: 0.5rem;">Deploy Instructions</h4>
+                <ol style="color: var(--text-secondary); font-size: 0.9rem; line-height: 1.8;">
+                    <li>Click "Download projects.json" after saving</li>
+                    <li>Replace <code>projects.json</code> in repo root</li>
+                    <li>Add project files to <code>public/assets/projects/{folder}/</code></li>
+                    <li>Commit & push - Cloudflare auto-deploys</li>
+                </ol>
+            </div>
         </section>
     </main>
 
