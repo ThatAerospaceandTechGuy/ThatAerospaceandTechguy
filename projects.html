@@ -114,6 +114,7 @@
                         <div class="project-content">
                             <div class="project-meta">
                                 <span class="project-date">Published on ${formatDate(project.date)}</span>
+                                ${project.files && project.files.length ? `<span class="file-count" style="margin-left: 1rem; font-size: 0.8rem; color: var(--accent);">${project.files.length} file(s)</span>` : ''}
                             </div>
                             <h3 class="project-title">
                                 <a href="project.html?slug=${encodeURIComponent(slugify(project.title))}">${escapeHtml(project.title)}</a>

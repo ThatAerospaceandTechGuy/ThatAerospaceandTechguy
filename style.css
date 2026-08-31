@@ -907,3 +907,80 @@ footer p {
     background: none;
     padding: 0;
 }
+
+/* Project Files Section */
+.project-files {
+    margin-top: 3rem;
+    padding-top: 2rem;
+    border-top: 1px solid var(--border);
+}
+
+.project-files h3 {
+    color: var(--accent);
+    font-size: 1.25rem;
+    margin-bottom: 1.5rem;
+}
+
+.project-files .file-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+}
+
+.project-files .file-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 1rem;
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    text-decoration: none;
+    color: var(--text-primary);
+    transition: border-color 0.2s ease, background 0.2s ease;
+}
+
+.project-files .file-item:hover {
+    border-color: var(--accent);
+    background: var(--bg-nav);
+}
+
+.project-files .file-info {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+
+.project-files .file-icon {
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--bg-main);
+    border-radius: 8px;
+    color: var(--accent);
+}
+
+.project-files .file-details {
+    display: flex;
+    flex-direction: column;
+}
+
+.project-files .file-name {
+    font-weight: 500;
+}
+
+.project-files .file-size {
+    font-size: 0.85rem;
+    color: var(--text-muted);
+}
+
+.project-files .file-item svg:last-child {
+    color: var(--text-muted);
+    transition: color 0.2s ease;
+}
+
+.project-files .file-item:hover svg:last-child {
+    color: var(--accent);
+}
