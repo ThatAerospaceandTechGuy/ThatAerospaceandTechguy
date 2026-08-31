@@ -139,6 +139,20 @@
 
             document.getElementById('projectContent').innerHTML = project.content;
             
+            // Add "View Project Page" link if folder exists
+            const projectHeader = document.querySelector('.project-detail-header');
+            if (project.folder) {
+                const pageUrl = `https://raw.githubusercontent.com/ThatAerospaceandTechGuy/ThatAerospaceandTechguy/main/projects/${project.folder}/pagecode/index.html`;
+                const viewPageLink = document.createElement('a');
+                viewPageLink.href = pageUrl;
+                viewPageLink.target = '_blank';
+                viewPageLink.rel = 'noopener noreferrer';
+                viewPageLink.className = 'btn btn-primary';
+                viewPageLink.style.marginTop = '1rem';
+                viewPageLink.innerHTML = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="margin-right: 0.5rem;"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>View Project Page';
+                projectHeader.appendChild(viewPageLink);
+            }
+            
             // Render project files
             const filesContainer = document.getElementById('projectFiles');
             if (project.files && project.files.length > 0) {

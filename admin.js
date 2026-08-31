@@ -405,10 +405,10 @@ class GitHubSync {
     async uploadFiles(folder) {
         for (const file of this.pendingFiles) {
             const base64 = await this.fileToBase64(file);
-            const path = `projects/${folder}/${file.name}`;
+            const path = `projects/${folder}/assets/${file.name}`;
             
             const response = await this.githubRequest('PUT', `contents/${path}`, {
-                message: `Add file: ${file.name}`,
+                message: `Add asset: ${file.name}`,
                 content: base64,
                 branch: this.branch
             });
@@ -486,6 +486,9 @@ class GitHubSync {
             throw new Error(error.message || 'Failed to commit to GitHub');
         }
 
+        // Also save page content as pagecode/index.html
+        await this.savePageCode(project.folder, project.content, project.files);
+
         return commitResponse.json();
     }
 
@@ -535,7 +538,112 @@ class GitHubSync {
             throw new Error(error.message || 'Failed to commit to GitHub');
         }
 
+        // Also update page content
+        await this.savePageCode(projects[index].folder, project.content, allFiles);
+
         return commitResponse.json();
+    }
+
+async savePageCode(folder, content, files = []) {
+        const pageHtml = `<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>${this.escapeHtml(this.getProjectTitle(folder))} | MyPortfolio</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        :root { --bg-main: #0d1117; --bg-card: #161b22; --accent: #38bdf8; --text-primary: #e6edf3; --text-secondary: #8b949e; --border: #30363d; }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Inter', sans-serif; background: var(--bg-main); color: var(--text-primary); line-height: 1.6; }
+        .container { max-width: 900px; margin: 0 auto; padding: 2rem; }
+        .back-link { color: var(--accent); text-decoration: none; display: inline-block; margin-bottom: 2rem; }
+        h1 { font-size: 2.5rem; margin-bottom: 1rem; }
+        .project-meta { color: var(--text-secondary); margin-bottom: 2rem; }
+        .project-content { font-size: 1.1rem; line-height: 1.8; }
+        .project-content img { max-width: 100%; border-radius: 8px; margin: 1rem 0; }
+        .files-section { margin-top: 3rem; padding-top: 2rem; border-top: 1px solid var(--border); }
+        .file-list { display: flex; flex-direction: column; gap: 0.75rem; }
+        .file-item { display: flex; align-items: center; gap: 1rem; padding: 1rem; background: var(--bg-card); border: 1px solid var(--border); border-radius: 8px; text-decoration: none; color: var(--text-primary); }
+        .file-item:hover { border-color: var(--accent); }
+        .file-icon { width: 40px; height: 40px; background: var(--bg-main); border-radius: 8px; display: flex; align-items: center; justify-content: center; color: var(--accent); }
+        .file-name { font-weight: 500; }
+        .file-size { font-size: 0.85rem; color: var(--text-secondary); }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <a href="../../../index.html" class="back-link">← Back to Portfolio</a>
+        <h1>${this.escapeHtml(this.getProjectTitle(folder))}</h1>
+        <div class="project-meta">Published project</div>
+        <div class="project-content">${content}</div>
+        <div class="files-section">
+            <h2>Project Files</h2>
+            <div class="file-list" id="fileList"></div>
+        </div>
+    </div>
+    <script>
+        const files = ${JSON.stringify(files.map(f => ({ name: f.name, downloadUrl: f.downloadUrl, size: f.size })))}; 
+        const list = document.getElementById('fileList');
+        const icons = { 
+            pdf: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>',
+            default: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>'
+        };
+        function getIcon(name) { const ext = name.split('.').pop().toLowerCase(); return icons[ext] || icons.default; }
+        function formatSize(bytes) { if (bytes < 1024) return bytes + ' B'; if (bytes < 1024*1024) return (bytes/1024).toFixed(1) + ' KB'; return (bytes/(1024*1024)).toFixed(1) + ' MB'; }
+        list.innerHTML = files.map(f => '<a href="' + f.downloadUrl + '" target="_blank" class="file-item"><div class="file-icon">' + getIcon(f.name) + '</div><div><div class="file-name">' + f.name + '</div><div class="file-size">' + formatSize(f.size) + '</div></div></a>').join('');
+    </script>
+</body>
+</html>`;
+
+        const base64 = this.base64Encode(pageHtml);
+        const path = `projects/${folder}/pagecode/index.html`;
+        
+        try {
+            // Check if file exists to get SHA
+            let sha = null;
+            const checkResponse = await this.githubRequest('GET', `contents/${path}?ref=${this.branch}`);
+            if (checkResponse.ok) {
+                const data = await checkResponse.json();
+                sha = data.sha;
+            }
+            
+            const body = {
+                message: `Update pagecode for ${folder}`,
+                content: base64,
+                branch: this.branch
+            };
+            if (sha) body.sha = sha;
+            
+            await this.githubRequest('PUT', `contents/${path}`, body);
+        } catch (error) {
+            console.warn('Could not save pagecode:', error.message);
+        }
+    }
+
+    getProjectTitle(folder) {
+        // Try to find project title from folder name
+        return folder.split('-').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' ');
+    }
+            
+            const body = {
+                message: `Update pagecode for ${folder}`,
+                content: base64,
+                branch: this.branch
+            };
+            if (sha) body.sha = sha;
+            
+            await this.githubRequest('PUT', `contents/${path}`, body);
+        } catch (error) {
+            console.warn('Could not save pagecode:', error.message);
+        }
+    }
+
+    getProjectTitle(folder) {
+        // Try to find project title from folder name
+        return folder.split('-').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' ');
     }
 
     async loadProjectsList() {
