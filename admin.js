@@ -21,7 +21,10 @@ class SimpleAdmin {
     }
 
     bindLogout() {
-        document.getElementById('logoutBtn').addEventListener('click', () => this.handleLogout());
+        const logoutBtn = document.getElementById('logoutBtn');
+        if (logoutBtn) {
+            logoutBtn.addEventListener('click', () => this.handleLogout());
+        }
     }
 
     bindCancelEdit() {
@@ -109,7 +112,8 @@ class SimpleAdmin {
         document.getElementById('publishBtn').querySelector('.btn-text').textContent = 'Publish Project';
         document.getElementById('cancelEditBtn').style.display = 'none';
         document.getElementById('projectForm').reset();
-        document.getElementById('projectFiles').value = '';
+        const projectFiles = document.getElementById('projectFiles');
+        if (projectFiles) projectFiles.value = '';
         this.quill.setContents([]);
         this.renderFileList();
         this.showEditorStatus('', 'info');
@@ -268,7 +272,9 @@ class SimpleAdmin {
 
     renderFileList() {
         // Placeholder - files managed in repo
-        document.getElementById('fileList').innerHTML = '<p style="color: var(--text-muted); font-size: 0.9rem;">Files are managed in the repo at <code>public/assets/projects/{folder}/</code>. Add files there and commit.</p>';
+        const fileList = document.getElementById('fileList');
+        if (!fileList) return;
+        fileList.innerHTML = '<p style="color: var(--text-muted); font-size: 0.9rem;">Files are managed in the repo at <code>public/assets/projects/{folder}/</code>. Add files there and commit.</p>';
     }
 
     formatDate(dateString) {
