@@ -222,7 +222,7 @@ class SimpleAdmin {
     }
 
     getFileList() {
-        // In this simple version, files are managed manually in public/assets/
+        // In this simple version, files are managed manually in projects/{folder}/
         // Return empty array - user adds files to repo manually
         return [];
     }
@@ -237,7 +237,7 @@ class SimpleAdmin {
         notice.style.cssText = 'margin-top: 1rem; padding: 1rem; background: var(--warning); color: var(--bg-main); border-radius: 8px;';
         notice.innerHTML = `
             <strong>⚠ Action Required:</strong> Download <a href="${url}" download="projects.json" style="color: var(--bg-main); text-decoration: underline;">projects.json</a> and replace the one in your repo root, then commit & push. Cloudflare will auto-deploy.
-            <br><small>For files: add them to <code>public/assets/projects/${this.editingProjectId || this.slugify(document.getElementById('projectTitle').value)}/</code> in your repo.</small>
+            <br><small>For files: add them to <code>projects/${this.slugify(document.getElementById('projectTitle').value)}/</code> in your repo.</small>
         `;
         document.getElementById('editorStatus').appendChild(notice);
     }
@@ -274,7 +274,7 @@ class SimpleAdmin {
         // Placeholder - files managed in repo
         const fileList = document.getElementById('fileList');
         if (!fileList) return;
-        fileList.innerHTML = '<p style="color: var(--text-muted); font-size: 0.9rem;">Files are managed in the repo at <code>public/assets/projects/{folder}/</code>. Add files there and commit.</p>';
+        fileList.innerHTML = '<p style="color: var(--text-muted); font-size: 0.9rem;">Files are managed in the repo at <code>projects/{folder}/</code>. Add files there and commit.</p>';
     }
 
     formatDate(dateString) {

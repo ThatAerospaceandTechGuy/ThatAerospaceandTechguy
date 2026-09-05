@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Page not found - MyPortfolio">
+    <title>MyPortfolio | Page Not Found</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <header>
+        <nav class="nav-container">
+            <a href="index.html" class="logo">My<span>Portfolio</span></a>
+            <button class="mobile-menu-btn" aria-label="Toggle menu" aria-expanded="false">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+                    <line x1="3" y1="6" x2="21" y2="6"></line>
+                    <line x1="3" y1="12" x2="21" y2="12"></line>
+                    <line x1="3" y1="18" x2="21" y2="18"></line>
+                </svg>
+            </button>
+            <ul class="nav-links" id="navLinks">
+                <li><a href="index.html">Home</a></li>
+                <li><a href="projects.html">Projects</a></li>
+                <li><a href="admin.html">Admin</a></li>
+            </ul>
+        </nav>
+    </header>
+    <main>
+        <section class="hero" aria-labelledby="notfound-title" style="text-align: center;">
+            <h1 id="notfound-title">404 — Page Not Found</h1>
+            <p class="subtitle">Sorry, the page you were looking for doesn't exist or was moved.</p>
+            <div class="accent-line" aria-hidden="true" style="margin: 1.5rem auto;"></div>
+            <p><a href="index.html" class="view-all">← Back to Home</a></p>
+        </section>
+    </main>
+    <footer>
+        <div class="footer-content">
+            <p>&copy; 2026 MyPortfolio. Built with vanilla JS and deployed on Cloudflare Pages.</p>
+        </div>
+    </footer>
+    <script>
+        const mobileMenuBtn = document.querySelector('.mobile-menu-btn');
+        const navLinks = document.getElementById('navLinks');
+        mobileMenuBtn.addEventListener('click', () => {
+            const isOpen = navLinks.classList.toggle('open');
+            mobileMenuBtn.setAttribute('aria-expanded', isOpen);
+        });
+    </script>
+</body>
+</html>

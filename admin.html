@@ -95,14 +95,14 @@
                 </div>
                 
                 <div class="form-group">
-                    <label for="projectImage">Cover Image URL (relative to /assets/)</label>
+                    <label for="projectImage">Cover Image URL (relative to repo root)</label>
                     <input type="text" id="projectImage" name="projectImage" placeholder="projects/my-project/cover.jpg">
                 </div>
                 
                 <div class="form-group">
                     <label>Project Folder Name (for assets)</label>
                     <input type="text" id="projectFolder" name="projectFolder" placeholder="my-project-name">
-                    <small style="color: var(--text-muted);">Files go in public/assets/projects/{folder}/</small>
+                    <small style="color: var(--text-muted);">Files go in projects/{folder}/</small>
                 </div>
                 
                 <div class="form-actions">
@@ -125,7 +125,7 @@
                 <ol style="color: var(--text-secondary); font-size: 0.9rem; line-height: 1.8;">
                     <li>Click "Download projects.json" after saving</li>
                     <li>Replace <code>projects.json</code> in repo root</li>
-                    <li>Add project files to <code>public/assets/projects/{folder}/</code></li>
+                    <li>Add project files to <code>projects/{folder}/</code></li>
                     <li>Commit & push - Cloudflare auto-deploys</li>
                 </ol>
             </div>
